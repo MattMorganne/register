@@ -1,29 +1,64 @@
 const express = require("express");
-const userRoutes = require("./routes/userRoutes"); // Import user routes
+const session = require("express-session"); // 👈 NEW
+const helmet = require("helmet"); // 👈 NEW
+const rateLimit = require("express-rate-limit"); // 👈 NEW
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes"); // 👈 NEW auth routes
 
 const app = express();
 
-// Middleware to parse incoming JSON payloads (required for req.body)
+// ============================================
+// 1. SECURITY MIDDLEWARE (Applied globally)
+// ============================================
+
+// Helmet - Security headers
+app.use(helmet());
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-super-secret-key-change-this',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// ============================================
+// 2. STANDARD MIDDLEWARE
+// ============================================
+
+// Parse JSON payloads
 app.use(express.json());
 
-// Declaring port
-const port = 3000;
+// ============================================
+// 3. ROUTES (Mounted separately)
+// ============================================
 
-// Calculator routes
-app.get("/", (req, res) => {
-    res.send("Welcome to my calculator app");
-});
+// Auth routes (login, logout) - NO auth required
+app.use("/auth", authRoutes);
 
-app.get("/add/:num1/:num2", (req, res) => {
-    const { num1, num2 } = req.params;
-    const sum = parseFloat(num1) + parseFloat(num2);
-    res.send(`The sum of ${num1} and ${num2} is ${sum}`);
-});
-
-// User routes (mounted on /users)
+// User routes - Some protected, some public (see userRoutes.js)
 app.use("/users", userRoutes);
 
-// Listening app
+// ============================================
+// 4. START SERVER
+// ============================================
+
+const port = 3000;
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Server running on port ${port}`);
+    console.log(`
+    Available routes:
+    POST /auth/login       (public)
+    POST /auth/logout      (protected)
+    GET  /users            (public)
+    GET  /users/:email     (protected)
+    POST /users            (public)
+    `);
 });
+
+module.exports = app;
