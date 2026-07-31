@@ -1,0 +1,4 @@
+//utilisateur puisse creer ajouter modier et supptimer des registre
+// Administrateur peut voir tout les registre et les modifier et supprimer
+//Utilisateur peut voir seulement les registre qu'il a ajouter
+//creer le controller et le model pour le registre aussi

@@ -1,14 +1,26 @@
 const express = require("express");
-const session = require("express-session"); // 👈 NEW
-const helmet = require("helmet"); // 👈 NEW
-const rateLimit = require("express-rate-limit"); // 👈 NEW
+const session = require("express-session");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const cors = require("cors"); // 👈 ADD THIS
 const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes"); // 👈 NEW auth routes
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
 // ============================================
-// 1. SECURITY MIDDLEWARE (Applied globally)
+// 1. CORS MIDDLEWARE (Add this FIRST)
+// ============================================
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Your React app URL
+    credentials: true, // Allow cookies/session
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// ============================================
+// 2. SECURITY MIDDLEWARE
 // ============================================
 
 // Helmet - Security headers
@@ -28,24 +40,21 @@ app.use(session({
 }));
 
 // ============================================
-// 2. STANDARD MIDDLEWARE
+// 3. STANDARD MIDDLEWARE
 // ============================================
 
 // Parse JSON payloads
 app.use(express.json());
 
 // ============================================
-// 3. ROUTES (Mounted separately)
+// 4. ROUTES
 // ============================================
 
-// Auth routes (login, logout) - NO auth required
 app.use("/auth", authRoutes);
-
-// User routes - Some protected, some public (see userRoutes.js)
 app.use("/users", userRoutes);
 
 // ============================================
-// 4. START SERVER
+// 5. START SERVER
 // ============================================
 
 const port = 3000;

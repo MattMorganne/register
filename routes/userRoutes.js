@@ -9,7 +9,7 @@ const { auth, requireAdmin } = require("../middleware/auth");
 // ============================================
 
 // Get all users (public)
-router.get("/", userController.getAllUsers);
+router.get("/",  requireAdmin, userController.getAllUsers);
 
 // Create a new user (public registration)
 router.post("/", userController.createUser);
@@ -42,5 +42,8 @@ router.put("/admin/:id", requireAdmin, userController.updateUserAdmin);
 
 // Get user statistics (admin only)
 router.get("/admin/stats", requireAdmin, userController.getUserStats);
+
+// Get current user info (protected)
+router.get("/me", auth, userController.getCurrentUser);
 
 module.exports = router;

@@ -431,3 +431,39 @@ exports.getUserStats = async (req, res) => {
         });
     }
 };
+
+/**
+ * GET /users/me
+ * Get current logged in user info
+ */
+exports.getCurrentUser = async (req, res) => {
+  try {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please login first'
+      });
+    }
+
+    // Get fresh user data from database
+    const user = await User.findById(req.session.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    console.error('Get current user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user',
+      error: error.message
+    });
+  }
+};

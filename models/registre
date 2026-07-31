@@ -1,0 +1,14 @@
+//nomducour 
+//-- descriptionducours  
+// -- date du cours
+//  -- nombreheure ecouler
+
+
+
+//utilisateur connecter peut ajouter un element dans le registre 
+// Administrateuer devrait pouvoir voitr tout les element du registre 
+// lutilisateurs ne peut voir que les element qu'il a ajouter
+//  -- lutilisateur peut modifier ou supprimer un element qu'il a ajouter
+
+
+//une fois lexercice terminer envoyer le code sur github et mettez le en fichier public 
